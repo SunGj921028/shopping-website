@@ -1,87 +1,204 @@
-# Database Project
-- This is a project that simulates a web of shopping website like 原價屋.
+# Shopping Website
 
-## Tech we use
-- svelteKit
-- TailwindCSS(flowbite, skeleton)
-- Javascript, Typescript, node.js, npm package
-- MySQL for backend
-- prisma
-- docker(compose)
+A full-stack shopping website project inspired by PC e-commerce flows (product browsing, cart, checkout, likes, order tracking, and admin management), built with SvelteKit + Prisma + MySQL.
 
-## Team Member
-1. Akinom
-2. [SunGj](https://github.com/SunGj921028)
-3. KJC
-4. Notpotato
+---
 
-## How to use
-#### Please prepare a environment already with nodejs, npm, docker, docker-compose.
-1. Just clone this repo to your local repo using
-```bash
-git clone https://github.com/Akinom0318/database_project.git
+## Project Highlights
+
+- **Full-stack flow in one repo**: frontend pages + server endpoints + relational database schema
+- **Data-heavy shopping experience**: product table with search/sort/pagination, likes, cart, and checkout
+- **Role-based UI**: separate navigation and management pages for normal users vs admin users
+- **Practical DB design**: Prisma models covering products, users, cart, orders, payment info, and many-to-many relations
+- **Local reproducibility**: Docker Compose bootstraps MySQL and seeded data via `init.sql`
+
+---
+
+## Tech Stack
+
+- **Frontend**: SvelteKit, Svelte, Skeleton UI, Tailwind CSS, Flowbite
+- **Backend**: SvelteKit server routes (`+server.js`)
+- **Database**: MySQL 8, Prisma ORM
+- **Tooling**: Node.js, npm, Docker Compose, Vite, Prettier, Playwright
+
+---
+
+## Architecture Overview
+
+```text
+Svelte UI (routes/*.svelte)
+   |
+   | fetch(...)
+   v
+SvelteKit Server Routes (routes/**/+server.js)
+   |
+   v
+Data Access Layer (src/lib/server/server.js)
+   |
+   v
+Prisma Client (src/lib/server/prisma.js)
+   |
+   v
+MySQL (Docker, initialized by init.sql)
 ```
-2. Install the modules we need for the project
+
+### Key folders
+
+- `src/routes/`
+  - UI pages (`+page.svelte`)
+  - HTTP endpoints (`+server.js`) for CRUD and business operations
+- `src/lib/server/server.js`
+  - centralized DB operations (query/create/update/delete)
+- `prisma/schema.prisma`
+  - relational schema and constraints
+- `docker-compose.yml`
+  - local MySQL container setup
+- `init.sql`
+  - DB initialization/seed data
+
+---
+
+## Core Features
+
+### User Side
+
+- Registration and login
+- Product browsing with:
+  - sorting
+  - pagination
+  - keyword search + search-history persistence
+- Add-to-cart and quantity update
+- Product likes and liked-list
+- Checkout flow (payment + delivery info)
+- Transaction history page (with order status)
+- Currency exchange utility page
+
+### Admin Side
+
+- Product management (create/update/delete)
+- User list and user deletion
+- Transaction overview across orders and payments
+
+---
+
+## Data Model Snapshot
+
+Main entities from `prisma/schema.prisma`:
+
+- `user`, `user_phone`
+- `product`
+- `cart_item`
+- `liking_list`
+- `orders`, `order_item`
+- `paying_info`, `paying`
+- `search_history`
+
+This schema covers:
+
+- **many-to-many joins** (`cart_item`, `liking_list`, `order_item`, `paying`)
+- **order and payment lifecycle**
+- **user behavior tracking** (search history, likes, purchases)
+
+---
+
+## Local Setup
+
+### 1) Prerequisites
+
+- Node.js + npm
+- Docker + Docker Compose
+
+### 2) Install dependencies
+
 ```bash
 npm install
-# Or
-npm i
 ```
-3. Please watch .env.example to see the environment setting.
-4. The first five variables are for the docker to set up your DB environment, and the last one is for prisma to connect to your DB.
-5. So, add a ```.env``` file on the root folder, add those six lines in .env.example into it.
-6. Once you make your own .env file done
-```bach
+
+### 3) Configure environment
+
+Create `.env` in project root and copy values from `.env.example`:
+
+```env
+MYSQL_ROOT_PASSWORD=123456789
+MYSQL_DATABASE=Team5DBFinal
+MYSQL_PASSWORD=team5
+MYSQL_USER=team5
+MYSQL_PORT=8000
+DATABASE_URL="mysql://root:123456789@localhost:8000/Team5DBFinal"
+```
+
+### 4) Start database
+
+```bash
 docker-compose up --build -d
 ```
-7. Then you can open the website by
+
+### 5) Run app
+
 ```bash
 npm run dev
 ```
 
-## Default Admin Account and Password
-```bash
-email: admin
+Open the app in browser (usually `http://localhost:5173`).
+
+---
+
+## Demo Accounts
+
+Default admin account in seeded data:
+
+```text
+account: admin
 password: admin
 ```
 
-# create-svelte
+---
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Scripts
 
 ```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
 npm run build
+npm run preview
+npm run check
+npm run lint
+npm run format
+npm run test
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
 
 ---
+
+## Portfolio Talking Points
+
+- Designed and integrated a complete shopping workflow from DB schema to UI interactions.
+- Built modular server routes and centralized Prisma data access for maintainable backend logic.
+- Implemented role-specific UX and admin operations without splitting into separate projects.
+- Applied relational modeling for orders, payments, and product interactions in a real-world-like domain.
+- Containerized local database environment to improve setup consistency across team members.
+
+---
+
+## Current Limitations
+
+- Authentication/session flow is lightweight (not production-grade auth/session hardening).
+- Sensitive data handling and credential management still need production-level improvements.
+- Automated testing exists but is currently minimal.
+
+---
+
+## Future Improvements
+
+- Add secure authentication/session strategy (hashing, token/cookie session, authorization guards).
+- Split service layer into domain modules and add request validation middleware.
+- Improve transaction handling for checkout consistency.
+- Expand E2E and integration test coverage.
+- Add CI pipeline and deployment-ready environment profiles.
+
+---
+
+## Team
+
+1. Akinom  
+2. [SunGj](https://github.com/SunGj921028)  
+3. KJC  
+4. Notpotato
