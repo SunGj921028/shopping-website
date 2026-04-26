@@ -168,7 +168,7 @@ npm run test
 
 ---
 
-## Portfolio Talking Points
+## Talking Points
 
 - Designed and integrated a complete shopping workflow from DB schema to UI interactions.
 - Built modular server routes and centralized Prisma data access for maintainable backend logic.
